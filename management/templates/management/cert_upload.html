@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Certification</title>
+</head>
+<body>
+    <h1>Upload Certification</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
+    <a href="{% url 'vendor_profile' %}">Back to Profile</a>
+</body>
+</html>
