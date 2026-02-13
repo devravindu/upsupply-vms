@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from datetime import date
 import uuid
 import hashlib
 import os
@@ -19,19 +20,47 @@ class Vendor(models.Model):
         ('inactive', 'Inactive'),
     ]
 
+    VENDOR_TYPES = [
+        ('wholesaler', 'Wholesaler'),
+        ('manufacturer', 'Manufacturer'),
+        ('distributor', 'Distributor'),
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    # Adding user field for Vendor Profile Builder authentication
+
+    # Vendor Profile Builder Auth
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='vendor_profile', null=True, blank=True)
+
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
+    # Added fields based on visual reference and requirements
+    vendor_type = models.CharField(max_length=50, choices=VENDOR_TYPES, default='wholesaler')
+    country = models.CharField(max_length=100, default='United States')
+    registration_number = models.CharField(max_length=100, blank=True)
+    stock_symbol = models.CharField(max_length=50, blank=True)
+    website = models.URLField(blank=True)
+    internal_rep = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='represented_vendors')
+    relationship_start_date = models.DateField(default=date.today)
+
+    # Contact Info
+    contact_name = models.CharField(max_length=255, blank=True)
+    contact_email = models.EmailField(blank=True)
+    contact_phone = models.CharField(max_length=50, blank=True)
+
+    # Financials (visual cue)
+    total_spend = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def clean(self):
+        # Verification Logic
         if self.status == 'verified':
             if not self.pk:
                 raise ValidationError("Cannot verify a new vendor. Create the vendor first, add certifications, then verify.")
 
-            valid_certs = self.certs.filter(expiry_date__gte=timezone.now().date(), is_current=True)
+            # Check for at least one valid certification
+            valid_certs = self.certs.filter(expiry_date__gte=date.today(), is_current=True)
             if not valid_certs.exists():
                 raise ValidationError("Cannot verify vendor without at least one valid certification.")
 
@@ -66,7 +95,6 @@ class Certification(models.Model):
 
     @property
     def is_valid(self):
-        from datetime import date
         return self.expiry_date >= date.today() and self.is_current
 
     def __str__(self):

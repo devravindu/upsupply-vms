@@ -195,3 +195,42 @@ class VendorLogicTests(TestCase):
         self.assertEqual(history.count(), 2)
         self.assertEqual(history.last().status, 'verified')
         self.assertEqual(history.last().changed_by, self.user)
+
+class VendorFieldsTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='vendor_rep', password='password')
+        self.vendor = Vendor.objects.create(
+            name="New Vendor",
+            vendor_type='manufacturer',
+            country='Germany',
+            registration_number='DE123456',
+            stock_symbol='NVDR',
+            website='https://newvendor.com',
+            internal_rep=self.user,
+            contact_name='Hans Mueller',
+            contact_email='hans@newvendor.com',
+            contact_phone='+49123456789',
+            total_spend=1000.50
+        )
+
+    def test_vendor_fields_storage(self):
+        """Test that new fields are stored and retrieved correctly."""
+        vendor = Vendor.objects.get(pk=self.vendor.pk)
+        self.assertEqual(vendor.vendor_type, 'manufacturer')
+        self.assertEqual(vendor.country, 'Germany')
+        self.assertEqual(vendor.registration_number, 'DE123456')
+        self.assertEqual(vendor.stock_symbol, 'NVDR')
+        self.assertEqual(vendor.website, 'https://newvendor.com')
+        self.assertEqual(vendor.internal_rep, self.user)
+        self.assertEqual(vendor.contact_name, 'Hans Mueller')
+        self.assertEqual(vendor.contact_email, 'hans@newvendor.com')
+        self.assertEqual(vendor.contact_phone, '+49123456789')
+        self.assertEqual(vendor.total_spend, 1000.50)
+
+    def test_default_values(self):
+        """Test default values for new fields."""
+        vendor = Vendor.objects.create(name="Default Vendor")
+        self.assertEqual(vendor.vendor_type, 'wholesaler')
+        self.assertEqual(vendor.country, 'United States')
+        self.assertEqual(vendor.total_spend, 0.00)
+        self.assertEqual(vendor.relationship_start_date, date.today())
