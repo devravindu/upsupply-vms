@@ -1,0 +1,186 @@
+{% extends 'management/base.html' %}
+
+{% block header_title %}Vendor Profile{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <nav class="flex text-sm text-gray-500 mb-1" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{% url 'vendor_list' %}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                        Vendors
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                        <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">{{ vendor.name }}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+        <h1 class="text-2xl font-bold text-gray-800">{{ vendor.name }}</h1>
+    </div>
+    <div class="flex space-x-3">
+        <a href="{% url 'vendor_update' vendor.pk %}" class="bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 border border-gray-300 rounded-md shadow-sm transition duration-150 ease-in-out">
+            Edit
+        </a>
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm transition duration-150 ease-in-out">
+            More Actions
+        </button>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Main Info & Stats -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Overview Card -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                <h3 class="text-lg font-medium text-gray-900">Overview</h3>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                    {% if vendor.status == 'verified' %}bg-green-100 text-green-800
+                    {% elif vendor.status == 'inactive' %}bg-red-100 text-red-800
+                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                    {{ vendor.get_status_display }}
+                </span>
+            </div>
+            <div class="p-6">
+                <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Name</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ vendor.name }}</dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Type</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ vendor.get_vendor_type_display }}</dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Total Spend</dt>
+                        <dd class="mt-1 text-sm text-gray-900 font-semibold">${{ vendor.total_spend|floatformat:2 }}</dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Status</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ vendor.get_status_display }}</dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Country of Registration</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ vendor.country }}</dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Company Registration Number</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ vendor.registration_number|default:"-" }}</dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Stock Symbol</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ vendor.stock_symbol|default:"-" }}</dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Company Website</dt>
+                        <dd class="mt-1 text-sm text-blue-600 hover:underline">
+                            {% if vendor.website %}
+                            <a href="{{ vendor.website }}" target="_blank">{{ vendor.website }}</a>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Internal Representative</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ vendor.internal_rep.username|default:"-" }}</dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Relationship Since</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ vendor.relationship_start_date }}</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Certifications Vault -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                <h3 class="text-lg font-medium text-gray-900">Certifications</h3>
+                <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500">Add Certificate</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Issue Date</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expiry Date</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for cert in certs %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ cert.get_cert_type_display }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cert.issue_date }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cert.expiry_date }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if cert.is_valid %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        Active
+                                    </span>
+                                {% else %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        Expired
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="{{ cert.file.url }}" target="_blank" class="text-blue-600 hover:text-blue-900">View PDF</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No certifications found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Info -->
+    <div class="lg:col-span-1 space-y-6">
+        <!-- Contact Information -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <h3 class="text-lg font-medium text-gray-900">Contact Information</h3>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Main Contact Person</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ vendor.contact_name|default:"-" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Official Email</dt>
+                    <dd class="mt-1 text-sm text-blue-600 hover:underline">
+                        {% if vendor.contact_email %}
+                        <a href="mailto:{{ vendor.contact_email }}">{{ vendor.contact_email }}</a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Secondary Email</dt>
+                    <dd class="mt-1 text-sm text-blue-600 hover:underline">-</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Mobile Number</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ vendor.contact_phone|default:"-" }}</dd>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions or Notes could go here -->
+    </div>
+</div>
+{% endblock %}
