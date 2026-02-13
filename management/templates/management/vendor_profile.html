@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vendor Profile</title>
+</head>
+<body>
+    <h1>Vendor Profile: {{ object.name }}</h1>
+    <p>Status: <span style="font-weight:bold; color: {% if object.status == 'verified' %}green{% else %}red{% endif %}">{{ object.get_status_display }}</span></p>
+
+    <h3>Update Contact Info</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Update Info</button>
+    </form>
+
+    <h3>Certifications</h3>
+    <ul>
+        {% for cert in certs %}
+            <li>
+                {{ cert.get_cert_type_display }} (Issued: {{ cert.issue_date }}, Expires: {{ cert.expiry_date }})
+                {% if cert.is_valid %}
+                    <span style="color: green;">VALID</span>
+                {% else %}
+                    <span style="color: red;">INVALID</span>
+                {% endif %}
+                <a href="{{ cert.file.url }}" target="_blank">View PDF</a>
+            </li>
+        {% empty %}
+            <li>No certifications found.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Upload New Certification</h3>
+    <form method="post" action="{% url 'cert_upload' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ cert_form.as_p }}
+        <button type="submit">Upload Certification</button>
+    </form>
+</body>
+</html>
