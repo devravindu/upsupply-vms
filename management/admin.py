@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Vendor, Certification, Product, VendorHistory
+from .models import Vendor, Certification, Product, VendorHistory, Contract
 
 @admin.register(Vendor)
 class VendorAdmin(admin.ModelAdmin):
@@ -55,3 +55,16 @@ class VendorHistoryAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
+
+@admin.register(Contract)
+class ContractAdmin(admin.ModelAdmin):
+    list_display = ('contract_id', 'vendor', 'total_value', 'start_date', 'end_date', 'is_active_display')
+    search_fields = ('contract_id', 'vendor__name')
+    list_filter = ('start_date', 'end_date')
+
+    def is_active_display(self, obj):
+        return obj.is_active
+
+    is_active_display.boolean = True
+    is_active_display.short_description = 'Is Active'

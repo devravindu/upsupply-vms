@@ -3,109 +3,69 @@
 {% block header_title %}Overview Dashboard{% endblock %}
 
 {% block content %}
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <!-- Total Vendors Card -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between">
-        <div>
-            <p class="text-sm font-medium text-gray-500 mb-1">Total Vendors</p>
-            <h3 class="text-3xl font-bold text-slate-800">{{ total_vendors }}</h3>
-        </div>
-        <div class="bg-blue-50 p-3 rounded-full">
-            <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-        </div>
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+    <div class="rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+        <p class="text-xs font-medium text-gray-500">Total Vendors</p>
+        <h3 class="mt-2 text-2xl font-bold text-slate-800">{{ total_vendors }}</h3>
     </div>
-
-    <!-- Verified Vendors Card -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between">
-        <div>
-            <p class="text-sm font-medium text-gray-500 mb-1">Verified Vendors</p>
-            <h3 class="text-3xl font-bold text-green-600">{{ verified_vendors }}</h3>
-        </div>
-        <div class="bg-green-50 p-3 rounded-full">
-            <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        </div>
+    <div class="rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+        <p class="text-xs font-medium text-gray-500">Verified Vendors</p>
+        <h3 class="mt-2 text-2xl font-bold text-green-600">{{ verified_vendors }}</h3>
     </div>
-
-    <!-- Expiring Certs Card -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between">
-        <div>
-            <p class="text-sm font-medium text-gray-500 mb-1">Expiring Certs (30d)</p>
-            <h3 class="text-3xl font-bold text-red-500">{{ expiring_certs }}</h3>
-        </div>
-        <div class="bg-red-50 p-3 rounded-full">
-            <svg class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        </div>
+    <div class="rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+        <p class="text-xs font-medium text-gray-500">Expiring Certs (30d)</p>
+        <h3 class="mt-2 text-2xl font-bold text-red-500">{{ expiring_certs }}</h3>
     </div>
-
-    <!-- Total Products Card -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between">
-        <div>
-            <p class="text-sm font-medium text-gray-500 mb-1">Total Products</p>
-            <h3 class="text-3xl font-bold text-slate-800">{{ total_products }}</h3>
-        </div>
-        <div class="bg-purple-50 p-3 rounded-full">
-            <svg class="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-        </div>
+    <div class="rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+        <p class="text-xs font-medium text-gray-500">Total Products</p>
+        <h3 class="mt-2 text-2xl font-bold text-slate-800">{{ total_products }}</h3>
+    </div>
+    <div class="rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+        <p class="text-xs font-medium text-gray-500">Active Contract Spend</p>
+        <h3 class="mt-2 text-2xl font-bold text-blue-700">${{ total_spend|floatformat:2 }}</h3>
     </div>
 </div>
 
-<!-- Charts Section -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Vendor Compliance Status</h3>
-        <div class="h-64 relative">
-             <canvas id="vendorStatusChart"></canvas>
-        </div>
-    </div>
+<div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+    <section class="rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+        <h3 class="mb-3 text-base font-semibold text-gray-800">Vendor Compliance Status</h3>
+        <div class="relative h-64"><canvas id="vendorStatusChart"></canvas></div>
+    </section>
 
-    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center justify-center">
-        <div class="text-center p-8">
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">Spend Analytics</h3>
-            <p class="text-gray-500">Spend analytics integration coming soon.</p>
-        </div>
-    </div>
+    <section class="rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+        <h3 class="mb-3 text-base font-semibold text-gray-800">Spend by Risk Tier</h3>
+        <div class="relative h-64"><canvas id="riskSpendChart"></canvas></div>
+    </section>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var ctx = document.getElementById('vendorStatusChart').getContext('2d');
-        var chart = new Chart(ctx, {
+        const statusCtx = document.getElementById('vendorStatusChart').getContext('2d');
+        new Chart(statusCtx, {
             type: 'doughnut',
             data: {
                 labels: {{ chart_labels|safe }},
                 datasets: [{
-                    label: 'Vendor Status',
                     data: {{ chart_data|safe }},
-                    backgroundColor: [
-                        'rgba(16, 185, 129, 0.8)', // Verified - Green
-                        'rgba(245, 158, 11, 0.8)', // Pending - Amber
-                        'rgba(239, 68, 68, 0.8)'  // Inactive - Red
-                    ],
-                    borderColor: [
-                        'rgba(16, 185, 129, 1)',
-                        'rgba(245, 158, 11, 1)',
-                        'rgba(239, 68, 68, 1)'
-                    ],
+                    backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(239, 68, 68, 0.8)'],
                     borderWidth: 1
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
+
+        const riskCtx = document.getElementById('riskSpendChart').getContext('2d');
+        new Chart(riskCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ risk_labels|safe }},
+                datasets: [{
+                    data: {{ risk_spend_data|safe }},
+                    backgroundColor: ['rgba(34, 197, 94, 0.8)', 'rgba(234, 179, 8, 0.8)', 'rgba(239, 68, 68, 0.8)'],
+                    borderWidth: 1
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
         });
     });
 </script>
