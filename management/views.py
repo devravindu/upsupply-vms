@@ -1,10 +1,10 @@
 from django.views.generic import UpdateView, CreateView, ListView, TemplateView, DetailView
+from django.db.models import Sum, Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
 from django.utils import timezone
 from datetime import timedelta
-from .models import Vendor, Certification, Product
+from .models import Vendor, Certification, Product, Contract
 from .forms import VendorForm, CertificationForm
 
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -25,6 +25,20 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         context['total_products'] = Product.objects.count()
 
+        today = timezone.now().date()
+        active_contracts = Contract.objects.filter(start_date__lte=today, end_date__gte=today)
+
+        context['total_spend'] = active_contracts.aggregate(total=Sum('total_value'))['total'] or 0
+
+        spend_by_risk = active_contracts.values('vendor__risk_tier').annotate(total=Sum('total_value'))
+        spend_map = {row['vendor__risk_tier']: row['total'] for row in spend_by_risk}
+        context['risk_labels'] = ['Low', 'Medium', 'High']
+        context['risk_spend_data'] = [
+            float(spend_map.get('low', 0) or 0),
+            float(spend_map.get('medium', 0) or 0),
+            float(spend_map.get('high', 0) or 0),
+        ]
+
         # Chart Data (Vendor Status)
         verified_count = context['verified_vendors']
         pending_count = Vendor.objects.filter(status='pending').count()
@@ -41,7 +55,13 @@ class VendorListView(LoginRequiredMixin, ListView):
     context_object_name = 'vendors'
 
     def get_queryset(self):
-        return Vendor.objects.all().order_by('-created_at')
+        today = timezone.now().date()
+        return Vendor.objects.annotate(
+            active_contract_value=Sum(
+                'contracts__total_value',
+                filter=Q(contracts__start_date__lte=today, contracts__end_date__gte=today),
+            )
+        ).order_by('-created_at')
 
 class VendorDetailView(LoginRequiredMixin, DetailView):
     model = Vendor

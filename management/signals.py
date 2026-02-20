@@ -14,6 +14,7 @@ def update_vendor_status(sender, instance, **kwargs):
         valid_certs = vendor.certs.filter(expiry_date__gte=date.today(), is_current=True)
         if not valid_certs.exists():
             vendor.status = 'inactive'
+            vendor.risk_tier = 'high'
             vendor.save()
 
 @receiver(pre_save, sender=Vendor)

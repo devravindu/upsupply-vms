@@ -10,7 +10,7 @@ class VendorForm(forms.ModelForm):
     class Meta:
         model = Vendor
         fields = [
-            'name', 'vendor_type', 'status', 'country', 'registration_number',
+            'name', 'vendor_type', 'status', 'risk_tier', 'country', 'registration_number',
             'stock_symbol', 'website', 'internal_rep', 'relationship_start_date',
             'contact_name', 'contact_email', 'contact_phone'
         ]
@@ -18,6 +18,7 @@ class VendorForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm'}),
             'vendor_type': forms.Select(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm'}),
             'status': forms.Select(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm'}),
+            'risk_tier': forms.Select(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm'}),
             'country': forms.TextInput(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm'}),
             'stock_symbol': forms.TextInput(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm'}),
             'website': forms.URLInput(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm'}),
