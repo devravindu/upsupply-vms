@@ -26,7 +26,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['total_products'] = Product.objects.count()
 
         today = timezone.now().date()
-        active_contracts = Contract.objects.filter(start_date__lte=today, end_date__gte=today)
+        active_contracts = Contract.objects.active(on_date=today)
 
         context['total_spend'] = active_contracts.aggregate(total=Sum('total_value'))['total'] or 0
 
