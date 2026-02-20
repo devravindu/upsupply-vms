@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from datetime import date
 import uuid
-import hashlib
 import os
 
 def hashed_upload_path(instance, filename):
@@ -26,6 +25,12 @@ class Vendor(models.Model):
         ('distributor', 'Distributor'),
     ]
 
+    RISK_TIER_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
 
@@ -33,6 +38,7 @@ class Vendor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='vendor_profile', null=True, blank=True)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    risk_tier = models.CharField(max_length=20, choices=RISK_TIER_CHOICES, default='medium')
 
     # Added fields based on visual reference and requirements
     vendor_type = models.CharField(max_length=50, choices=VENDOR_TYPES, default='wholesaler')
@@ -99,6 +105,29 @@ class Certification(models.Model):
 
     def __str__(self):
         return f"{self.vendor.name} - {self.cert_type}"
+
+
+class Contract(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='contracts')
+    contract_id = models.CharField(max_length=100)
+    total_value = models.DecimalField(max_digits=12, decimal_places=2)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    is_active = models.BooleanField(default=False, editable=False)
+
+    def clean(self):
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            raise ValidationError("Contract end date cannot be earlier than start date.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        today = timezone.now().date()
+        self.is_active = bool(self.start_date and self.end_date and self.start_date <= today <= self.end_date)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.contract_id} ({self.vendor.name})"
 
 class ActiveProductManager(models.Manager):
     def get_queryset(self):
