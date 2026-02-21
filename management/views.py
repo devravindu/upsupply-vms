@@ -34,9 +34,9 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         spend_map = {row['vendor__risk_tier']: row['total'] for row in spend_by_risk}
         context['risk_labels'] = ['Low', 'Medium', 'High']
         context['risk_spend_data'] = [
-            float(spend_map.get('low', 0) or 0),
-            float(spend_map.get('medium', 0) or 0),
-            float(spend_map.get('high', 0) or 0),
+            float(spend_map.get('Low', 0) or 0),
+            float(spend_map.get('Medium', 0) or 0),
+            float(spend_map.get('High', 0) or 0),
         ]
 
         # Chart Data (Vendor Status)

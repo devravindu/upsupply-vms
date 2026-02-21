@@ -3,78 +3,165 @@
 {% block header_title %}Vendor Directory{% endblock %}
 
 {% block content %}
-<div class="mb-4 flex items-center justify-between gap-3">
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div>
-        <h1 class="text-xl font-bold text-gray-800 md:text-2xl">All Vendors</h1>
-        <p class="text-xs text-gray-500 md:text-sm">Manage your supply chain partners</p>
+        <h1 class="text-3xl font-display font-bold text-slate-900">All Vendors</h1>
+        <p class="text-sm text-slate-500 font-medium">Manage and verify your supply chain partners</p>
     </div>
-    <a href="{% url 'vendor_create' %}" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700">
-        <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <a href="{% url 'vendor_create' %}"
+        class="inline-flex items-center justify-center rounded-2xl bg-clinical-600 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-clinical-600/30 transition-all hover:bg-clinical-700 hover:-translate-y-0.5 active:translate-y-0">
+        <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
-        Add
+        Register Vendor
     </a>
 </div>
 
-<div class="space-y-3 md:hidden">
+<!-- Mobile Card View -->
+<div class="grid grid-cols-1 gap-4 lg:hidden">
     {% for vendor in vendors %}
-    <article class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <div class="mb-3 flex items-start justify-between">
-            <div class="flex items-center gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-600">
+    <article
+        class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md hover:border-clinical-200">
+        <div class="mb-5 flex items-start justify-between">
+            <div class="flex items-center gap-4">
+                <div
+                    class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-clinical-50 text-clinical-600 border border-clinical-100 font-display font-bold text-lg shadow-sm">
                     {{ vendor.name|slice:":2"|upper }}
                 </div>
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-900">{{ vendor.name }}</h3>
-                    <p class="text-xs text-gray-500">{{ vendor.vendor_type|title }}</p>
+                    <h3 class="font-display font-bold text-slate-900 group-hover:text-clinical-600 transition-colors">{{
+                        vendor.name }}</h3>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ vendor.vendor_type|title }}
+                    </p>
                 </div>
             </div>
-            <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {% if vendor.risk_tier == 'low' %}bg-green-100 text-green-700{% elif vendor.risk_tier == 'high' %}bg-red-100 text-red-700{% else %}bg-yellow-100 text-yellow-700{% endif %}">
+            <span class="inline-flex rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider border
+                {% if vendor.risk_tier == 'Low' %}bg-emerald-50 text-emerald-700 border-emerald-100
+                {% elif vendor.risk_tier == 'High' %}bg-rose-50 text-rose-700 border-rose-100
+                {% else %}bg-amber-50 text-amber-700 border-amber-100{% endif %}">
                 {{ vendor.get_risk_tier_display }}
             </span>
         </div>
 
-        <div class="space-y-2 text-sm text-gray-600">
-            <div class="flex items-center justify-between">
-                <span>Status</span>
-                <span class="font-medium">{{ vendor.get_status_display }}</span>
+        <div class="grid grid-cols-2 gap-4 py-4 border-y border-slate-50">
+            <div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status</p>
+                <p class="text-xs font-semibold text-slate-700 mt-0.5">{{ vendor.get_status_display }}</p>
             </div>
-            <div class="flex items-center justify-between">
-                <span>Active Contract Value</span>
-                <span class="font-semibold text-slate-900">${{ vendor.active_contract_value|default:0|floatformat:2 }}</span>
+            <div class="text-right">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Contract Value</p>
+                <p class="text-xs font-bold text-clinical-600 mt-0.5">${{
+                    vendor.active_contract_value|default:0|floatformat:2 }}</p>
             </div>
         </div>
 
-        <a href="{% url 'vendor_detail' vendor.pk %}" class="mt-4 inline-flex text-sm font-medium text-blue-600">View profile →</a>
+        <div class="mt-5 flex items-center justify-between">
+            <a href="{% url 'vendor_detail' vendor.pk %}"
+                class="text-xs font-bold text-clinical-700 hover:text-clinical-800 flex items-center gap-1">
+                Full Profile
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </a>
+            <a href="{% url 'vendor_update' vendor.pk %}" class="text-slate-400 hover:text-slate-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+            </a>
+        </div>
     </article>
     {% empty %}
-    <div class="rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center text-sm text-gray-500">No vendors found.</div>
+    <div
+        class="rounded-3xl border-2 border-dashed border-slate-200 bg-white p-12 text-center text-sm font-medium text-slate-400">
+        No vendors registered in the system.
+    </div>
     {% endfor %}
 </div>
 
-<div class="hidden overflow-hidden rounded-xl border border-gray-200 bg-white md:block">
-    <div class="divide-y divide-gray-200">
-        {% for vendor in vendors %}
-        <div class="grid grid-cols-12 items-center gap-4 px-5 py-4">
-            <div class="col-span-4 flex items-center gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-600">{{ vendor.name|slice:":2"|upper }}</div>
-                <div>
-                    <p class="font-semibold text-gray-900">{{ vendor.name }}</p>
-                    <p class="text-xs text-gray-500">{{ vendor.vendor_type|title }}</p>
-                </div>
-            </div>
-            <div class="col-span-2">
-                <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {% if vendor.risk_tier == 'low' %}bg-green-100 text-green-700{% elif vendor.risk_tier == 'high' %}bg-red-100 text-red-700{% else %}bg-yellow-100 text-yellow-700{% endif %}">{{ vendor.get_risk_tier_display }}</span>
-            </div>
-            <div class="col-span-2 text-sm text-gray-600">{{ vendor.get_status_display }}</div>
-            <div class="col-span-2 text-sm font-semibold text-gray-900">${{ vendor.active_contract_value|default:0|floatformat:2 }}</div>
-            <div class="col-span-2 text-right">
-                <a href="{% url 'vendor_detail' vendor.pk %}" class="text-sm font-medium text-blue-600">View profile →</a>
-            </div>
-        </div>
-        {% empty %}
-        <div class="p-8 text-center text-sm text-gray-500">No vendors found.</div>
-        {% endfor %}
+<!-- Desktop List View -->
+<div class="hidden lg:block overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-slate-50 border-b border-slate-200">
+                <tr>
+                    <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Vendor Details
+                    </th>
+                    <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">
+                        Risk Tier</th>
+                    <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status</th>
+                    <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">
+                        Contract Value</th>
+                    <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for vendor in vendors %}
+                <tr class="hover:bg-slate-50 transition-colors group">
+                    <td class="px-6 py-5">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-clinical-50 text-clinical-600 border border-clinical-100 font-display font-bold shadow-sm">
+                                {{ vendor.name|slice:":2"|upper }}
+                            </div>
+                            <div>
+                                <h3
+                                    class="font-display font-bold text-slate-900 group-hover:text-clinical-600 transition-colors">
+                                    {{ vendor.name }}</h3>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{
+                                    vendor.vendor_type|title }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-5">
+                        <div class="flex justify-center">
+                            <span class="inline-flex rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider border
+                                {% if vendor.risk_tier == 'Low' %}bg-emerald-50 text-emerald-700 border-emerald-100
+                                {% elif vendor.risk_tier == 'High' %}bg-rose-50 text-rose-700 border-rose-100
+                                {% else %}bg-amber-50 text-amber-700 border-amber-100{% endif %} shadow-sm">
+                                {{ vendor.get_risk_tier_display }}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-5">
+                        <div class="flex items-center gap-2">
+                            <div
+                                class="h-1.5 w-1.5 rounded-full {% if vendor.status == 'verified' %}bg-emerald-500{% elif vendor.status == 'inactive' %}bg-rose-500{% else %}bg-amber-500{% endif %}">
+                            </div>
+                            <span class="text-xs font-semibold text-slate-700">{{ vendor.get_status_display }}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-5 text-right">
+                        <span class="text-sm font-bold text-clinical-600 font-display">${{
+                            vendor.active_contract_value|default:0|floatformat:2 }}</span>
+                    </td>
+                    <td class="px-6 py-5 text-right">
+                        <div
+                            class="flex items-center justify-end gap-3 opacity-30 group-hover:opacity-100 transition-opacity">
+                            <a href="{% url 'vendor_update' vendor.pk %}"
+                                class="text-slate-400 hover:text-slate-600"><svg class="w-5 h-5" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg></a>
+                            <a href="{% url 'vendor_detail' vendor.pk %}"
+                                class="text-clinical-600 hover:text-clinical-800"><svg class="w-5 h-5" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
+                                </svg></a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="p-12 text-center text-sm font-medium text-slate-400">No vendors found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
+{% endblock %}
 {% endblock %}

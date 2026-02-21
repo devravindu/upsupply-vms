@@ -29,9 +29,9 @@ class Vendor(models.Model):
     ]
 
     RISK_TIER_CHOICES = [
-        ('low', 'Low'),
-        ('medium', 'Medium'),
-        ('high', 'High'),
+        ('Low', 'Low'),
+        ('Medium', 'Medium'),
+        ('High', 'High'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
