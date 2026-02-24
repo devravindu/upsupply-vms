@@ -1,0 +1,24 @@
+{% extends 'management/base.html' %}
+{% block title %}Approval Queue{% endblock %}
+{% block header_title %}Compliance Approval Queue{% endblock %}
+{% block content %}
+<div class="bg-white border border-slate-200 rounded-2xl p-6">
+  <h3 class="text-lg font-semibold mb-4">Pending Certifications</h3>
+  <div class="space-y-3">
+    {% for cert in certifications %}
+      <div class="p-4 border rounded-xl flex justify-between items-center">
+        <div>
+          <p class="font-semibold">{{ cert.vendor.name }} · {{ cert.cert_type }}</p>
+          <p class="text-sm text-slate-500">Expires {{ cert.expiry_date }}</p>
+        </div>
+        <form method="post" action="{% url 'approve_certification' cert.pk %}">
+          {% csrf_token %}
+          <button class="px-3 py-2 rounded-lg bg-emerald-600 text-white">Approve</button>
+        </form>
+      </div>
+    {% empty %}
+      <p class="text-slate-500">No pending certifications.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
