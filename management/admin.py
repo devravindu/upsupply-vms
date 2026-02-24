@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Vendor, Certification, Product, VendorHistory, Contract
+
+from .models import Certification, Contract, Product, Vendor, VendorHistory
+
 
 @admin.register(Vendor)
 class VendorAdmin(admin.ModelAdmin):
@@ -12,11 +14,8 @@ class VendorAdmin(admin.ModelAdmin):
         color = 'red'
         if obj.status == 'verified':
             color = 'green'
-        elif obj.status == 'pending':
-            color = 'red' # As per prompt
-        elif obj.status == 'inactive':
-             color = 'red'
-
+        elif obj.status == 'under_review':
+            color = 'orange'
         return format_html('<span style="color: {}; font-weight: bold;">{}</span>', color, obj.get_status_display())
 
     status_tag.short_description = 'Status'
@@ -25,15 +24,18 @@ class VendorAdmin(admin.ModelAdmin):
         obj._current_user = request.user
         super().save_model(request, obj, form, change)
 
+
 @admin.register(Certification)
 class CertificationAdmin(admin.ModelAdmin):
-    list_display = ('vendor', 'cert_type', 'expiry_date', 'is_current', 'is_valid_display')
-    list_filter = ('cert_type', 'is_current')
+    list_display = ('vendor', 'cert_type', 'approval_status', 'expiry_date', 'is_current', 'is_valid_display')
+    list_filter = ('cert_type', 'is_current', 'approval_status')
 
     def is_valid_display(self, obj):
         return obj.is_valid
+
     is_valid_display.boolean = True
     is_valid_display.short_description = 'Is Valid'
+
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -42,8 +44,10 @@ class ProductAdmin(admin.ModelAdmin):
 
     def is_active_display(self, obj):
         return obj.is_active
+
     is_active_display.boolean = True
     is_active_display.short_description = 'Is Active in System'
+
 
 @admin.register(VendorHistory)
 class VendorHistoryAdmin(admin.ModelAdmin):

@@ -1,8 +1,16 @@
 from django.urls import path
+
 from .views import (
-    DashboardView, VendorListView, VendorDetailView,
-    VendorCreateView, VendorUpdateView, VendorProfileView,
-    CertificationUploadView
+    ApprovalQueueView,
+    ApproveCertificationView,
+    CertificationUploadView,
+    DashboardView,
+    VendorAuditExportView,
+    VendorCreateView,
+    VendorDetailView,
+    VendorListView,
+    VendorProfileView,
+    VendorUpdateView,
 )
 
 urlpatterns = [
@@ -11,8 +19,9 @@ urlpatterns = [
     path('vendors/create/', VendorCreateView.as_view(), name='vendor_create'),
     path('vendors/<uuid:pk>/', VendorDetailView.as_view(), name='vendor_detail'),
     path('vendors/<uuid:pk>/edit/', VendorUpdateView.as_view(), name='vendor_update'),
-
-    # Original Vendor Profile URLs (might be redundant now but keeping for compatibility if vendor user logs in)
+    path('vendors/<uuid:pk>/audit-export/', VendorAuditExportView.as_view(), name='vendor_audit_export'),
+    path('compliance/queue/', ApprovalQueueView.as_view(), name='approval_queue'),
+    path('compliance/certifications/<int:pk>/approve/', ApproveCertificationView.as_view(), name='approve_certification'),
     path('profile/', VendorProfileView.as_view(), name='vendor_profile'),
     path('profile/upload_cert/', CertificationUploadView.as_view(), name='cert_upload'),
 ]

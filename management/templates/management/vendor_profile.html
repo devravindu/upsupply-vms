@@ -1,41 +1,53 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Vendor Profile</title>
-</head>
-<body>
-    <h1>Vendor Profile: {{ object.name }}</h1>
-    <p>Status: <span style="font-weight:bold; color: {% if object.status == 'verified' %}green{% else %}red{% endif %}">{{ object.get_status_display }}</span></p>
-
-    <h3>Update Contact Info</h3>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Update Info</button>
+{% extends 'management/base.html' %}
+{% block title %}Vendor Portal{% endblock %}
+{% block header_title %}Vendor Portal{% endblock %}
+{% block content %}
+<div class="grid gap-6 lg:grid-cols-3">
+  <section class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6">
+    <h3 class="text-lg font-semibold mb-4">Contact & Profile</h3>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="px-4 py-2 rounded-lg bg-clinical-600 text-white">Save Profile</button>
     </form>
+  </section>
 
-    <h3>Certifications</h3>
-    <ul>
-        {% for cert in certs %}
-            <li>
-                {{ cert.get_cert_type_display }} (Issued: {{ cert.issue_date }}, Expires: {{ cert.expiry_date }})
-                {% if cert.is_valid %}
-                    <span style="color: green;">VALID</span>
-                {% else %}
-                    <span style="color: red;">INVALID</span>
-                {% endif %}
-                <a href="{{ cert.file.url }}" target="_blank">View PDF</a>
-            </li>
-        {% empty %}
-            <li>No certifications found.</li>
-        {% endfor %}
+  <section class="bg-white rounded-2xl border border-slate-200 p-6">
+    <h3 class="text-lg font-semibold mb-3">Compliance Status</h3>
+    <p class="text-sm text-slate-600">Current status:</p>
+    <p class="font-bold {% if object.status == 'verified' %}text-emerald-600{% else %}text-rose-600{% endif %}">{{ object.get_status_display }}</p>
+  </section>
+</div>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-2">
+  <section class="bg-white rounded-2xl border border-slate-200 p-6">
+    <h3 class="text-lg font-semibold mb-4">Certification Upload</h3>
+    <form method="post" action="{% url 'cert_upload' %}" enctype="multipart/form-data" class="space-y-3">
+      {% csrf_token %}
+      {{ cert_form.as_p }}
+      <button type="submit" class="px-4 py-2 rounded-lg bg-clinical-600 text-white">Upload Certification</button>
+    </form>
+    <ul class="mt-4 space-y-2 text-sm">
+      {% for cert in certs %}
+      <li class="p-3 border rounded-lg flex justify-between">
+        <span>{{ cert.get_cert_type_display }} ({{ cert.approval_status }})</span>
+        <a class="text-clinical-700 font-semibold" href="{{ cert.file.url }}" target="_blank">PDF</a>
+      </li>
+      {% empty %}<li>No certifications yet.</li>{% endfor %}
     </ul>
+  </section>
 
-    <h3>Upload New Certification</h3>
-    <form method="post" action="{% url 'cert_upload' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ cert_form.as_p }}
-        <button type="submit">Upload Certification</button>
-    </form>
-</body>
-</html>
+  <section class="bg-white rounded-2xl border border-slate-200 p-6">
+    <h3 class="text-lg font-semibold mb-4">Active Contracts</h3>
+    <ul class="space-y-2 text-sm">
+      {% for contract in contracts %}
+      <li class="p-3 border rounded-lg">
+        <p class="font-semibold">{{ contract.contract_id }}</p>
+        <p>Total: ${{ contract.total_value }}</p>
+        <p>{{ contract.start_date }} - {{ contract.end_date }}</p>
+      </li>
+      {% empty %}<li>No contracts available.</li>{% endfor %}
+    </ul>
+  </section>
+</div>
+{% endblock %}
